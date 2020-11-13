@@ -1,0 +1,17 @@
+﻿Variable,Description
+Positive weekly cases per capita,"Variables 1, … , x enumerating weekly county COVID positive tests per week (per 100,000). To be fitted as response variables."
+FIPS code,Federal Information Processing Standard county code used as identifiers
+Population,County population estimate for 2019 from the U.S. Census Bureau
+Population Change,Estimates population change between 2018 and 2019
+Group Quarters Estimate,"Estimates the total number of county residents living in group quarters in 2019 (e.g. nursing homes, residential treatment centers, student housing, religious convents/monasteries, correctional facilities, and hospitals)"
+Birth Rate,"Estimates birth rate for 2019 (live births per 1,000)"
+Death Rate,"Estimates death rate for 2019 (deaths per 1,000)"
+Natural increase Rate,Estimates natural increase rate for 2019 (birthRate - deathRate)
+International Migration Rate,Estimates rate of international migration for 2019 
+Domestic Migration Rate,Estimates rate of domestic migration for 2019
+Net Migration Rate,Estimates net migration rate for 2019 (intMigration + domMigration)
+Trump Vote Share,Proportion of those who voted who cast ballots for President Trump in the 2016 election
+U.S. Region,"Categorical variable for region according to US Census Bureau -- includes Northeast, South, Midwest, and West"
+Governor's Political Party,Catergorical variable indicating state governor's politcal party (note that this is a binary variable; all 48 included states have governors identifying as Democrat or Republican.) Washington DC's federal district mayor (also a Democrat) is included for analysis in lieu of a governor. 
+Rural/Urban Code,"Categorical variable derived from USDA's rural-urban continuum code indicating whether a county is metropolitan, metropolitan adjacent, or non-metropolitan."
+Primary Economy,"Categorical variable derived from USDA's economic typography codes indicating whether a county's main source of economic activity is nonspecialized, recreation, farming, government, manufacturing, or mining."

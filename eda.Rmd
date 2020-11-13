@@ -1,0 +1,32 @@
+---
+title: "dataexploration"
+output: pdf_document
+---
+
+```{r}
+knitr::opts_chunk$set(message = FALSE, echo = FALSE, warning=FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(GGally)
+```
+
+```{r}
+mydata <- read_csv("covid.csv")
+```
+
+
+```{r}
+mydata %>%
+  ggplot(aes(x = increaseRate, y = death_rate_log)) +
+  geom_point()
+
+pairs(data = mydata, ~ log(increaseRate) +(death_rate) + log(population) + log(popChange))
+pairs(data = mydata, ~increaseRate + death_rate + population + popChange)
+pairs(data = mydata, ~increaseRate + death_rate + population + popChange)
+
+```
+
+
+
