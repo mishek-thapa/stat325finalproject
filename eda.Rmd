@@ -10,6 +10,7 @@ knitr::opts_chunk$set(message = FALSE, echo = FALSE, warning=FALSE)
 ```{r}
 library(tidyverse)
 library(GGally)
+library(dlookr)
 ```
 
 ```{r}
@@ -18,15 +19,28 @@ mydata <- read_csv("covid.csv")
 
 
 ```{r}
-mydata %>%
-  ggplot(aes(x = increaseRate, y = death_rate_log)) +
-  geom_point()
 
-pairs(data = mydata, ~ log(increaseRate) +(death_rate) + log(population) + log(popChange))
-pairs(data = mydata, ~increaseRate + death_rate + population + popChange)
-pairs(data = mydata, ~increaseRate + death_rate + population + popChange)
+pairs(data = mydata, ~ log(increaseRate) +(covid_death_rate) + log(population) + log(popChange))
+pairs(data = mydata, ~increaseRate + covid_death_rate + population + popChange)
+pairs(data = mydata, ~increaseRate + covid_death_rate + population + popChange)
+
+ggpairs(data = mydata, columns = c(14:18,21))
+
+pairs(data = mydata, ~ covid_death_rate + proTrump)
+
+dlookr::plot_correlate(mydata[,c(5:20,21)])
+```
+
+```{r}
 
 ```
+
+
+
+
+
+
+
 
 
 
