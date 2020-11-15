@@ -11,31 +11,105 @@ knitr::opts_chunk$set(message = FALSE, echo = FALSE, warning=FALSE)
 library(tidyverse)
 library(GGally)
 library(dlookr)
+library(ggplot2)
+library(gridExtra)
+library(ggsci)
+library(artyfarty)
+library(RColorBrewer)
 ```
 
 ```{r}
-mydata <- read_csv("covid.csv")
+mydata <- read_csv("covid.csv") %>%
+  select(-1) #removes the weird X1 col
+```
+
+```{r plot-covid-counties}
+
+myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+
+mydata %>%
+  mutate(LAT = as.numeric(sub("\\+","", lat)),
+         LON = as.numeric(sub("\\+","", lon))) %>%
+  ggplot(aes(x = LON, y = LAT, color = covid_death_rate_log)) +
+  geom_point(alpha = 0.3) +
+  coord_equal() + 
+  scale_color_gradientn(colours = myPalette(4)) +
+  theme_scientific() +
+  labs(color = "Death Rate",
+       title = "COVID Death Rates across the US")
 ```
 
 
-```{r}
 
-pairs(data = mydata, ~ log(increaseRate) +(covid_death_rate) + log(population) + log(popChange))
-pairs(data = mydata, ~increaseRate + covid_death_rate + population + popChange)
-pairs(data = mydata, ~increaseRate + covid_death_rate + population + popChange)
-
-ggpairs(data = mydata, columns = c(14:18,21))
-
-pairs(data = mydata, ~ covid_death_rate + proTrump)
-
-dlookr::plot_correlate(mydata[,c(5:20,21)])
+```{r echo=FALSE, fig.align='center', out.width = "240px", fig.cap="Correlation plot of county population statistics"}
+ggcorr(mydata[,c("netMigrationRate", "domMigrationRate", "increaseRate", "deathRate", "birthRate", "popChange", "total_population")],  label = TRUE, layout.exp = 0)
 ```
 
-```{r}
-
+```{r echo=FALSE, fig.align='center', out.width = "70%", fig.cap="Pairs plot illustrating relationship between pro-Trump vote share and a county's domestic migration rate and natural increase rate. Grouped by U.S. region."}
+ggpairs(mydata[,c("domMigrationRate", "increaseRate", "proTrump")], 
+        ggplot2::aes(color= mydata$region, alpha = .3),
+        diag = list(discrete="barDiag")) +
+  theme_scientific()
 ```
 
+```{r echo=FALSE, warning = FALSE, fig.align='center', out.width = "85%", fig.cap="Bar-charts illustrating general relationship between pro-Trump vote share in 2016 and various categorical predictors, as well as between USDA metro/non-metro qualifiers and county population"}
 
+h1 <- ggplot(legend = 0, mydata, aes(x=region, y=proTrump, fill = region)) +
+  stat_summary(fun.y="mean", geom="bar")  +
+  labs(x = "Region", y = "Trump Vote Share") +
+  theme_scientific() +
+  theme(legend.position="none")
+
+h2 <- ggplot(legend = 0, mydata, aes(x=main_econ, y=proTrump, fill = main_econ)) +
+  stat_summary(fun.y="mean", geom="bar") +
+  labs(x = "\n\nPrimary Economy", y = "Trump Vote Share") +
+  theme_scientific()  + 
+  theme(axis.text.x = element_text(vjust = grid::unit(c(-2, 0, 2), "points")), legend.position="none")
+
+
+h3 <- ggplot(legend = 0, mydata, aes(x=metro_area, y=proTrump, fill = metro_area)) +
+  stat_summary(fun.y="mean", geom="bar") +
+  labs(x = "Rural/Urban Code", y = "TrumpVote Share") +
+  theme_scientific() +
+  theme(legend.position="none")
+
+
+
+h4 <- ggplot(legend = 0, mydata, aes(x=metro_area, y=total_population, fill = metro_area)) +
+  stat_summary(fun.y="mean", geom="bar") + 
+  labs(x = "Rural/Urban Code", y = "Population")+
+  theme_scientific() +
+  theme(legend.position="none")
+
+g <- grid.arrange(h1, h2, h3, h4) 
+```
+
+```{r echo=FALSE, message = FALSE, fig.align='center', out.width = "240px", fig.cap="Distribution of weekly cases during Week 25 (July 6 - July 12, 2020)"}
+mydata%>%
+  ggplot(aes(x = case_count)) + geom_histogram() + labs(x = "Total County-Level Cases", y = "Count") +
+  theme_scientific()
+```
+
+```{r echo=FALSE, message = FALSE, fig.align='center', out.width = "240px", fig.cap="Distribution of weekly cases during Week 25 (July 6 - July 12, 2020)"}
+mydata%>%
+  ggplot(aes(x = death_count)) + geom_histogram() + labs(x = "Total County-Level Cases", y = "Count") +theme_scientific()
+```
+
+```{r echo=FALSE, message = FALSE, fig.align='center', out.width = "240px", fig.cap="Distribution of weekly cases during Week 25 (July 6 - July 12, 2020)"}
+mydata%>%
+  ggplot(aes(x = covid_death_rate)) +
+  geom_histogram() +
+  labs(x = "Total County-Level Cases", y = "Count") +
+  theme_scientific()
+```
+
+```{r echo=FALSE, message = FALSE, fig.align='center', out.width = "240px", fig.cap="Distribution of weekly cases during Week 25 (July 6 - July 12, 2020)"}
+mydata%>%
+  ggplot(aes(x = covid_death_rate_log)) +
+  geom_histogram() +
+  labs(x = "Total County-Level Cases", y = "Count") +
+  theme_scientific()
+```
 
 
 
