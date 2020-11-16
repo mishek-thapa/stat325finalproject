@@ -1,0 +1,231 @@
+---
+title: "Poly Models (John)"
+author: "John Jerrnigan"
+date: "11/15/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-packages}
+library(tidyverse)
+library(caret)
+library(leaps)
+library(MASS)
+```
+
+```{r load-data}
+mydata <- read_csv("covid.csv")
+```
+
+```{r colnames}
+colnames(mydata)
+```
+
+```{r nas}
+sum(mydata$covid_death_rate_log == '-Inf')
+```
+
+```{r remove no case counties}
+mydata <- mydata%>%
+  filter(covid_death_rate_log != '-Inf')%>%
+  mutate(GQ_ESTIMATES_2019 = GQ_ESTIMATES_2019/total_population)%>%
+  mutate(density = total_population/area_sqmi)
+```
+
+```{r lm}
+lm1 <- lm(covid_death_rate_log ~ . - X1 - FIPS - name - state - netMigrationRate - total_population - case_count - death_count - covid_death_rate, data = mydata)
+summary(lm1)
+```
+
+```{r stepwise}
+step.1 <- stepAIC(lm1, direction = "both", trace = FALSE)
+summary(step.1)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(GQ_ESTIMATES_2019, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(GQ_ESTIMATES_2019, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(GQ_ESTIMATES_2019, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(GQ_ESTIMATES_2019, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(GQ_ESTIMATES_2019, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(birthRate, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(birthRate, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(birthRate, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(birthRate, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(birthRate, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(deathRate, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(deathRate, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(deathRate, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(deathRate, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(deathRate, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(domMigrationRate, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(domMigrationRate, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(domMigrationRate, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(domMigrationRate, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(domMigrationRate, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(proTrump, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(proTrump, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(proTrump, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(proTrump, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(proTrump, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(lon, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(lon, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(lon, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(lon, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(lon, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(lat, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(lat, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(lat, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(lat, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(lat, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(per_capita_income, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(per_capita_income, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(per_capita_income, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(per_capita_income, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(per_capita_income, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(percent_below_poverty, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(percent_below_poverty, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(percent_below_poverty, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(percent_below_poverty, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(percent_below_poverty, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(percent_minorities, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(percent_minorities, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(percent_minorities, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(percent_minorities, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(percent_minorities, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(percentile_rank_social_vulnerability, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(percentile_rank_social_vulnerability, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(percentile_rank_social_vulnerability, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(percentile_rank_social_vulnerability, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(percentile_rank_social_vulnerability, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(percent_uninsured, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(percent_uninsured, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(percent_uninsured, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(percent_uninsured, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(percent_uninsured, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(percent_smokers, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(percent_smokers, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(percent_smokers, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(percent_smokers, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(percent_smokers, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r poly}
+poly1 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 1), data = mydata)
+poly2 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 2), data = mydata)
+poly3 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 3), data = mydata)
+poly4 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 4), data = mydata)
+poly5 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 5), data = mydata)
+anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r lm}
+lm2 <- lm(covid_death_rate_log ~ GQ_ESTIMATES_2019 + birthRate + poly(deathRate, 2) + domMigrationRate + poly(proTrump, 2) + poly(lon, 2) + poly(lat, 5) + poly(per_capita_income, 3) + percent_below_poverty + poly(percent_minorities, 2) + percentile_rank_social_vulnerability + poly(percent_uninsured, 3) + poly(percent_smokers, 2) + percent_fair_or_poor_health + region + govParty + metro_area + main_econ, data = mydata)
+summary(lm2)
+```
+
+```{r stepwise}
+step.2 <- stepAIC(lm2, direction = "both", trace = FALSE)
+summary(step.2)
+```
+
+```{r plot}
+plot(step.2, which = 1:4)
+```
+
+```{r modelCV, warning=FALSE}
+
+#creating a training set
+smp_size <- floor(0.8 * nrow(mydata))
+
+## set the seed to make partition reproducible
+set.seed(123)
+train_ind <- sample(seq_len(nrow(mydata)), size = smp_size)
+
+train <- mydata[train_ind, ]
+test <- mydata[-train_ind, ]
+```
+
+```{r predict}
+#obtaining the mean-squared error associated with the stepwise model
+pred <- predict(step.2, test)
+MSE.2 <- sum((pred - test$covid_death_rate_log)^2)/nrow(test)
+MSE.2
+```
+
+```{r diagnostics}
+#residual diagnostic plots for week 30
+par(mfrow=c(2,2))
+plot(step.2)
+```
+
+```{r }
+plot(fitted(step.2),residuals(step.2))
+predicted.intervals <- predict(step.2, mydata, interval='confidence',
+                               level=0.99)
+lines(mydata$covid_death_rate_log, predicted.intervals[,1],col='green',lwd=3)
+lines(mydata$covid_death_rate_log, predicted.intervals[,2],col='black',lwd=1)
+lines(mydata$covid_death_rate_log, predicted.intervals[,3],col='black',lwd=1)
+```
+
+```{r predict}
+plot( mydata$GQ_ESTIMATES_2019, mydata$covid_death_rate_log, col = "darkgrey")
+title("Degree-3 Polynomial", outer = TRUE)
+lines(CDRL.grid, preds$fit, lwd = 2, col = "blue")
+matlines(CDRL.grid, se.bands, lwd = 1, col = "blue", lty = 3)
+```
