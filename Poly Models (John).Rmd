@@ -175,7 +175,7 @@ anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
 ```{r lm}
-lm2 <- lm(covid_death_rate_log ~ GQ_ESTIMATES_2019 + birthRate + poly(deathRate, 2) + domMigrationRate + poly(proTrump, 2) + poly(lon, 2) + poly(lat, 5) + poly(per_capita_income, 3) + percent_below_poverty + poly(percent_minorities, 2) + percentile_rank_social_vulnerability + poly(percent_uninsured, 3) + poly(percent_smokers, 2) + percent_fair_or_poor_health + region + govParty + metro_area + main_econ, data = mydata)
+lm2 <- lm(covid_death_rate_log ~ GQ_ESTIMATES_2019 + birthRate + poly(deathRate, 3) + domMigrationRate + poly(proTrump, 2) + poly(lon, 2) + lat + poly(per_capita_income, 3) + percent_below_poverty + poly(percent_minorities, 2) + percentile_rank_social_vulnerability + poly(percent_uninsured, 3) + poly(percent_smokers, 2) + percent_fair_or_poor_health + region + govParty + metro_area + main_econ, data = mydata)
 summary(lm2)
 ```
 
@@ -216,11 +216,6 @@ plot(step.2)
 
 ```{r }
 plot(fitted(step.2),residuals(step.2))
-predicted.intervals <- predict(step.2, mydata, interval='confidence',
-                               level=0.99)
-lines(mydata$covid_death_rate_log, predicted.intervals[,1],col='green',lwd=3)
-lines(mydata$covid_death_rate_log, predicted.intervals[,2],col='black',lwd=1)
-lines(mydata$covid_death_rate_log, predicted.intervals[,3],col='black',lwd=1)
 ```
 
 ```{r predict}
