@@ -1,28 +1,100 @@
 ---
 title: "Mishek's Models"
-output: html_document
+output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r}
 knitr::opts_chunk$set(message = FALSE, echo = FALSE, warning=FALSE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+library(tidyverse)
+library(glmnet)
+library(mgcv)
+library(visreg)
+library(mgcViz)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+# Lasso 
+```{r}
+mydata <- read_csv("covid.csv") 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+mydata <- mydata %>%
+  select(-c(1:4,29:31)) #remove covid case count and remove the death count?
+
+mydata <- mydata[is.finite(mydata$covid_death_rate_log),]
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+x <- model.matrix(covid_death_rate_log~.,mydata)[,-1]
+y <- mydata$covid_death_rate_log 
+grid <- 10^seq(10, -2, length = 100) # grid of values for lambda parameters
+```
+
+
+```{r}
+set.seed(17)
+train <- sample(1:nrow(x), nrow(x)/2)
+test <- (-train)
+y.test <- y[test]
+```
+
+
+```{r}
+lasso.mod <- glmnet(x[train,], y[train], alpha = 1, lambda = grid)
+plot(lasso.mod)
+```
+
+```{r}
+set.seed(1)
+cv.out <- cv.glmnet(x[train,], y[train], alpha = 1)
+plot(cv.out)
+bestlam <- cv.out$lambda.min
+```
+
+```{r}
+lasso.pred <- predict(lasso.mod, s = bestlam, newx = x[test,])
+mean((lasso.pred - y.test)^2)
+```
+
+
+```{r}
+out <- glmnet(x, y, alpha = 1, lambda = grid)
+lasso.coef <- predict(out, type = "coefficients", s = bestlam)[1:32,]
+lasso.coef
+```
+Percent_smokers, percent_uninsured,percent_below_poverty, proTrump, birthrate, GQ estimates, and percent_fair_or_poor_health were the variables that were removed by lasso selection. This led to a cv error of 0.87. 
+
+#GAM
+
+```{r}
+mygam <- gam(covid_death_rate_log ~ s(density) + s(area_sqmi) + s(total_population) +
+             s(percentile_rank_social_vulnerability) + s(percent_minorities) +
+             s(per_capita_income) + s(lat) + s(lon) + (main_econ) + (metro_area) + s(netMigrationRate) +
+             s(increaseRate) + s(deathRate) + s(popChange), data = mydata[train,])
+gam.pred <- predict.gam(mygam, newdata = mydata[test,c(33,26,25,23,22,21,20,18,19,17, 16,12,9,8,5)])
+mean((gam.pred - y.test)^2)
+
+
+
+mygam <- getViz(mygam)
+check(mygam,
+      a.qq = list(method = "tnorm", 
+                  a.cipoly = list(fill = "light blue")), 
+      a.respoi = list(size = 0.5), 
+      a.hist = list(bins = 10))
+```
+
+
+
+
+
+
+
+
+
+
+
+

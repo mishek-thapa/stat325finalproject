@@ -2,7 +2,7 @@ library(tidyverse)
 library(data.table)
 
 political_data <- read_csv("finalProjectData.csv")%>% #from John's sources
-  select(c(1,3,4,6:18))
+  dplyr::select(c(1,3,4,6:18))
 
 covid <- read_csv("covid_kaggle.csv") #from kaggle
 sociohealth <- read_csv("socio-healthdata.csv") #from kaggle
