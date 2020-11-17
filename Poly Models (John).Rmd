@@ -14,6 +14,7 @@ library(tidyverse)
 library(caret)
 library(leaps)
 library(MASS)
+library(ggplot2)
 ```
 
 ```{r load-data}
@@ -69,6 +70,11 @@ poly5 <-lm(covid_death_rate_log~poly(GQ_ESTIMATES_2019, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
+```{r plot-var}
+ggplot(train, aes(GQ_ESTIMATES_2019, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 5, raw = TRUE)) 
+```
+
 ```{r poly}
 poly1 <-lm(covid_death_rate_log~poly(birthRate, 1), data = train)
 poly2 <-lm(covid_death_rate_log~poly(birthRate, 2), data = train)
@@ -76,6 +82,11 @@ poly3 <-lm(covid_death_rate_log~poly(birthRate, 3), data = train)
 poly4 <-lm(covid_death_rate_log~poly(birthRate, 4), data = train)
 poly5 <-lm(covid_death_rate_log~poly(birthRate, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r plot-var}
+ggplot(train, aes(birthRate, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ x) 
 ```
 
 ```{r poly}
@@ -87,6 +98,11 @@ poly5 <-lm(covid_death_rate_log~poly(deathRate, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
+```{r plot-var}
+ggplot(train, aes(deathRate, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 3, raw = TRUE)) 
+```
+
 ```{r poly}
 poly1 <-lm(covid_death_rate_log~poly(domMigrationRate, 1), data = train)
 poly2 <-lm(covid_death_rate_log~poly(domMigrationRate, 2), data = train)
@@ -94,6 +110,11 @@ poly3 <-lm(covid_death_rate_log~poly(domMigrationRate, 3), data = train)
 poly4 <-lm(covid_death_rate_log~poly(domMigrationRate, 4), data = train)
 poly5 <-lm(covid_death_rate_log~poly(domMigrationRate, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r plot-var}
+ggplot(train, aes(domMigrationRate, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ x) 
 ```
 
 ```{r poly}
@@ -105,6 +126,11 @@ poly5 <-lm(covid_death_rate_log~poly(proTrump, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
+```{r plot-var}
+ggplot(train, aes(proTrump, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ x) 
+```
+
 ```{r poly}
 poly1 <-lm(covid_death_rate_log~poly(lon, 1), data = train)
 poly2 <-lm(covid_death_rate_log~poly(lon, 2), data = train)
@@ -112,6 +138,11 @@ poly3 <-lm(covid_death_rate_log~poly(lon, 3), data = train)
 poly4 <-lm(covid_death_rate_log~poly(lon, 4), data = train)
 poly5 <-lm(covid_death_rate_log~poly(lon, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r plot-var}
+ggplot(train, aes(lon, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 2, raw = TRUE)) 
 ```
 
 ```{r poly}
@@ -123,6 +154,10 @@ poly5 <-lm(covid_death_rate_log~poly(lat, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
+```{r plot-var}
+ggplot(train, aes(lat, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ x) 
+```
 
 ```{r poly}
 poly1 <-lm(covid_death_rate_log~poly(per_capita_income, 1), data = train)
@@ -131,6 +166,16 @@ poly3 <-lm(covid_death_rate_log~poly(per_capita_income, 3), data = train)
 poly4 <-lm(covid_death_rate_log~poly(per_capita_income, 4), data = train)
 poly5 <-lm(covid_death_rate_log~poly(per_capita_income, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r plot-var}
+ggplot(train, aes(per_capita_income, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 3, raw = TRUE)) 
+```
+
+```{r plot-var}
+ggplot(train, aes(per_capita_income, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 4, raw = TRUE)) 
 ```
 
 ```{r poly}
@@ -142,6 +187,15 @@ poly5 <-lm(covid_death_rate_log~poly(percent_below_poverty, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
+```{r plot-var}
+ggplot(train, aes(percent_below_poverty, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ x) 
+```
+
+```{r plot-var}
+ggplot(train, aes(percent_below_poverty, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 2, raw = TRUE)) 
+```
 
 ```{r poly}
 poly1 <-lm(covid_death_rate_log~poly(percent_minorities, 1), data = train)
@@ -150,6 +204,11 @@ poly3 <-lm(covid_death_rate_log~poly(percent_minorities, 3), data = train)
 poly4 <-lm(covid_death_rate_log~poly(percent_minorities, 4), data = train)
 poly5 <-lm(covid_death_rate_log~poly(percent_minorities, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r plot-var}
+ggplot(train, aes(percent_minorities, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 2, raw = TRUE)) 
 ```
 
 ```{r poly}
@@ -161,6 +220,10 @@ poly5 <-lm(covid_death_rate_log~poly(percentile_rank_social_vulnerability, 5), d
 anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
+```{r plot-var}
+ggplot(train, aes(percentile_rank_social_vulnerability, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ x) 
+```
 
 ```{r poly}
 poly1 <-lm(covid_death_rate_log~poly(percent_uninsured, 1), data = train)
@@ -169,6 +232,16 @@ poly3 <-lm(covid_death_rate_log~poly(percent_uninsured, 3), data = train)
 poly4 <-lm(covid_death_rate_log~poly(percent_uninsured, 4), data = train)
 poly5 <-lm(covid_death_rate_log~poly(percent_uninsured, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r plot-var}
+ggplot(train, aes(percent_uninsured, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 2, raw = TRUE)) 
+```
+
+```{r plot-var}
+ggplot(train, aes(percent_uninsured, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 3, raw = TRUE)) 
 ```
 
 ```{r poly}
@@ -180,6 +253,11 @@ poly5 <-lm(covid_death_rate_log~poly(percent_smokers, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
 ```
 
+```{r plot-var}
+ggplot(train, aes(percent_smokers, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 2, raw = TRUE)) 
+```
+
 ```{r poly}
 poly1 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 1), data = train)
 poly2 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 2), data = train)
@@ -187,6 +265,21 @@ poly3 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 3), data = tra
 poly4 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 4), data = train)
 poly5 <-lm(covid_death_rate_log~poly(percent_fair_or_poor_health, 5), data = train)
 anova(poly1, poly2, poly3, poly4, poly5)
+```
+
+```{r plot-var}
+ggplot(train, aes(percent_fair_or_poor_health, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ x) 
+```
+
+```{r plot-var}
+ggplot(train, aes(percent_fair_or_poor_health, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 2, raw = TRUE)) 
+```
+
+```{r plot-var}
+ggplot(train, aes(percent_fair_or_poor_health, covid_death_rate_log) ) + geom_point() +  
+stat_smooth(method = lm, formula = y ~ poly(x, 3, raw = TRUE)) 
 ```
 
 ```{r lm}
@@ -245,12 +338,6 @@ plot(step.2)
 plot(fitted(step.2),residuals(step.2))
 ```
 
-```{r predict}
-plot( mydata$GQ_ESTIMATES_2019, mydata$covid_death_rate_log, col = "darkgrey")
-title("Degree-3 Polynomial", outer = TRUE)
-lines(CDRL.grid, preds$fit, lwd = 2, col = "blue")
-matlines(CDRL.grid, se.bands, lwd = 1, col = "blue", lty = 3)
-```
 
 ```{r 10-fold-CV}
 # Define training control
@@ -271,4 +358,5 @@ pred <- predict(CVmodel, mydata)
 MSE.3 <- sum((pred - test$covid_death_rate_log)^2)/nrow(mydata)
 MSE.3
 ```
+
 
