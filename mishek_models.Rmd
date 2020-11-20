@@ -21,7 +21,7 @@ library(mgcViz)
 mydata <- read_csv("covid.csv") 
 
 mydata <- mydata %>%
-  select(-c(1:4,29:31)) #remove covid case count and remove the death count?
+  dplyr::select(-c(1:4,29:31)) #remove covid case count and remove the death count?
 
 mydata <- mydata[is.finite(mydata$covid_death_rate_log),]
 ```
@@ -36,11 +36,14 @@ grid <- 10^seq(10, -2, length = 100) # grid of values for lambda parameters
 
 ```{r}
 set.seed(17)
-train <- sample(1:nrow(x), nrow(x)/2)
+train <- sample(1:nrow(x), nrow(x)*0.7)
 test <- (-train)
 y.test <- y[test]
-```
 
+#dataframes
+train_data <- mydata[train, ]
+test_data <- mydata[-c(train), ]
+```
 
 ```{r}
 lasso.mod <- glmnet(x[train,], y[train], alpha = 1, lambda = grid)
@@ -49,7 +52,7 @@ plot(lasso.mod)
 
 ```{r}
 set.seed(1)
-cv.out <- cv.glmnet(x[train,], y[train], alpha = 1)
+cv.out <- cv.glmnet(x[train,], y[train], alpha = 1, )
 plot(cv.out)
 bestlam <- cv.out$lambda.min
 ```
@@ -69,15 +72,23 @@ Percent_smokers, percent_uninsured,percent_below_poverty, proTrump, birthrate, G
 
 #GAM
 
+
 ```{r}
+set.seed(1)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+
+#lassomodel
 mygam <- gam(covid_death_rate_log ~ s(density) + s(area_sqmi) + s(total_population) +
              s(percentile_rank_social_vulnerability) + s(percent_minorities) +
-             s(per_capita_income) + s(lat) + s(lon) + (main_econ) + (metro_area) + s(netMigrationRate) +
-             s(increaseRate) + s(deathRate) + s(popChange), data = mydata[train,])
-gam.pred <- predict.gam(mygam, newdata = mydata[test,c(33,26,25,23,22,21,20,18,19,17, 16,12,9,8,5)])
+             s(per_capita_income) + s(lat) + s(lon) + (main_econ) +
+               (metro_area) +s(netMigrationRate) +
+             s(increaseRate) + s(deathRate) + s(popChange),
+             data = mydata[train,], trControl = train.control) 
+
+
+gam.pred <- predict.gam(mygam, test_data)
 mean((gam.pred - y.test)^2)
-
-
 
 mygam <- getViz(mygam)
 check(mygam,
@@ -86,6 +97,34 @@ check(mygam,
       a.respoi = list(size = 0.5), 
       a.hist = list(bins = 10))
 ```
+
+Generally, the gam appears to perform better than the lasso. 
+
+```{r forward subsetting}
+set.seed(1)
+
+#the forward/reverse subset
+mygam_subset <- gam(covid_death_rate_log ~ s(GQ_ESTIMATES_2019) + s(birthRate) + s(deathRate) +
+               s(domMigrationRate) + s(proTrump) + s(lon) + s(lat) + s(per_capita_income) +
+               s(percent_below_poverty) + s(percent_minorities) +
+                 s(percentile_rank_social_vulnerability) +
+               s(percent_uninsured) + s(percent_smokers) + region +
+               metro_area + main_econ, data = train_data,trControl = train.control) 
+
+
+gam.pred_subset <- predict.gam(mygam, mydata)
+mean((gam.pred_subset - test_data$covid_death_rate_log)^2)
+```
+
+```{r}
+# Summarize the results
+print(CVmodel)
+```
+
+
+
+
+
 
 
 

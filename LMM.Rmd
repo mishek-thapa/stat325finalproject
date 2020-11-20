@@ -26,7 +26,7 @@ library(hydroGOF) # rmse()
 ```{r}
 mydata <- read_csv("covid.csv") 
 mydata <- mydata %>%
-  select(-c(1:2,29:31))
+  dplyr::select(-c(1:2,29:31))
 mydata <- mydata[is.finite(mydata$covid_death_rate_log),]
 mydata$name <- as.factor(mydata$name)
 mydata$region <- as.factor(mydata$region)
