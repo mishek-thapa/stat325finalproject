@@ -13,6 +13,9 @@ library(glmnet)
 library(mgcv)
 library(visreg)
 library(mgcViz)
+library(caret)
+library(leaps)
+library(MASS)
 ```
 
 
@@ -20,8 +23,11 @@ library(mgcViz)
 ```{r}
 mydata <- read_csv("covid.csv") 
 
+
+ #remove covid case count and remove the death count?
 mydata <- mydata %>%
-  dplyr::select(-c(1:4,29:31)) #remove covid case count and remove the death count?
+  dplyr::select(-c(1:4,29:31)) 
+
 
 mydata <- mydata[is.finite(mydata$covid_death_rate_log),]
 ```
@@ -72,23 +78,31 @@ Percent_smokers, percent_uninsured,percent_below_poverty, proTrump, birthrate, G
 
 #GAM
 
+```{r}
+mydata<- mydata %>%
+  mutate(GQ_ESTIMATES_2019 = GQ_ESTIMATES_2019/total_population)%>%
+  mutate(density = total_population/area_sqmi)
+```
+
 
 ```{r}
 set.seed(1)
 train.control <- trainControl(method = "repeatedcv", 
                               number = 10, repeats = 3)
+train_data <- mydata[train, ]
+test_data <- mydata[-c(train), ]
 
-#lassomodel
+#lasso selected model
 mygam <- gam(covid_death_rate_log ~ s(density) + s(area_sqmi) + s(total_population) +
              s(percentile_rank_social_vulnerability) + s(percent_minorities) +
              s(per_capita_income) + s(lat) + s(lon) + (main_econ) +
                (metro_area) +s(netMigrationRate) +
              s(increaseRate) + s(deathRate) + s(popChange),
-             data = mydata[train,], trControl = train.control) 
+             data = train_data, trControl = train.control, method = "REML") 
 
 
 gam.pred <- predict.gam(mygam, test_data)
-mean((gam.pred - y.test)^2)
+mean((gam.pred - test_data$covid_death_rate_log)^2)
 
 mygam <- getViz(mygam)
 check(mygam,
@@ -103,36 +117,32 @@ Generally, the gam appears to perform better than the lasso.
 ```{r forward subsetting}
 set.seed(1)
 
-#the forward/reverse subset
+#the forward/reverse subset model
 mygam_subset <- gam(covid_death_rate_log ~ s(GQ_ESTIMATES_2019) + s(birthRate) + s(deathRate) +
                s(domMigrationRate) + s(proTrump) + s(lon) + s(lat) + s(per_capita_income) +
                s(percent_below_poverty) + s(percent_minorities) +
                  s(percentile_rank_social_vulnerability) +
                s(percent_uninsured) + s(percent_smokers) + region +
-               metro_area + main_econ, data = train_data,trControl = train.control) 
+               metro_area + main_econ, data = train_data,
+               trControl = train.control, method = "REML") 
 
 
-gam.pred_subset <- predict.gam(mygam, mydata)
+gam.pred_subset <- predict.gam(mygam, test_data)
 mean((gam.pred_subset - test_data$covid_death_rate_log)^2)
 ```
 
+
+However, the forward/backward subset selection does not perform as well as the lasso selection. 
+
+
 ```{r}
-# Summarize the results
-print(CVmodel)
+
+
+morevariable <- gam(covid_death_rate_log ~ GQ_ESTIMATES_2019 + per_capita_income +      percent_minorities + percentile_rank_social_vulnerability + main_econ + metro_area  +  region + per_capita_income * metro_area + percent_minorities * per_capita_income , data = train_data,trControl = train.control, method = "REML")
+
+gam.pred_subset <- predict.gam(morevariable, test_data)
+mean((gam.pred_subset - test_data$covid_death_rate_log)^2)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
